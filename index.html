@@ -50649,7 +50649,15 @@
 
             updateButtonColor();
 
-            premiumalert();
+            // 1. Pro-Modus Switch auf AN stellen
+            const proSwitch = document.querySelector('.switch input');
+            proSwitch.checked = true;
+
+            // 2. Die Optik sofort anpassen
+            premiumalert(); 
+
+            // 3. Den Event-Listener hinzufügen, damit es auch beim Klicken umschaltet
+            proSwitch.addEventListener('change', premiumalert);
 
         };
 
