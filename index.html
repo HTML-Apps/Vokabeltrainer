@@ -50625,7 +50625,10 @@
             if (sprache) {
                 addSchwierigeOptionToDropdown(sprache);
             }
-        
+            
+            // Erzwinge Pro-Modus beim Laden:
+            document.querySelector('.switch input').checked = true;
+
             // Allgemeine DB initialisieren
             await new Promise((resolve) => {
                 initDB(function(db) {
