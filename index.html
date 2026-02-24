@@ -50628,6 +50628,7 @@
             
             // Erzwinge Pro-Modus beim Laden:
             document.querySelector('.switch input').checked = true;
+            function premiumalert();
 
             // Allgemeine DB initialisieren
             await new Promise((resolve) => {
@@ -51705,7 +51706,7 @@
                 
                 alert("💎 PRO-Funktionen aktiviert!");
 
-                document.body.style.backgroundColor = '#333';
+                document.body.style.backgroundColor = '#333'; //document.querySelector('.switch input').checked = true;
                 document.getElementById('frage-text').style.color = '#ffffff'; // Textfarbe auf Weiß setzen
 
                 document.querySelectorAll('.sonderzeichen').forEach(element => {
