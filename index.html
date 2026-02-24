@@ -50628,7 +50628,6 @@
             
             // Erzwinge Pro-Modus beim Laden:
             document.querySelector('.switch input').checked = true;
-            function premiumalert();
 
             // Allgemeine DB initialisieren
             await new Promise((resolve) => {
@@ -50649,6 +50648,8 @@
             });
 
             updateButtonColor();
+
+            premiumalert();
 
         };
 
