@@ -50629,6 +50629,40 @@
             // Erzwinge Pro-Modus beim Laden:
             document.querySelector('.switch input').checked = true;
 
+
+
+
+            if (proModeEnabled && window.matchMedia("(orientation: landscape)").matches)  {
+                
+                alert("💎 PRO-Funktionen aktiviert!");
+
+                document.body.style.backgroundColor = '#333'; //document.querySelector('.switch input').checked = true;
+                document.getElementById('frage-text').style.color = '#ffffff'; // Textfarbe auf Weiß setzen
+
+                document.querySelectorAll('.sonderzeichen').forEach(element => {
+                    element.style.color = '#ffffff';
+                });
+
+                document.querySelectorAll('.counter-display').forEach(element => {
+                    element.style.color = '#ffffff';
+                });
+
+                document.getElementById('vokabel-display').style.color = '#ffffff';
+
+                document.getElementById('timer').style.color = '#ffffff';
+
+                document.getElementById('converter-container').style.backgroundColor = '#333';
+
+            } 
+
+
+
+
+
+
+
+
+
             // Allgemeine DB initialisieren
             await new Promise((resolve) => {
                 initDB(function(db) {
