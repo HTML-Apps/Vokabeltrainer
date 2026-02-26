@@ -50630,9 +50630,9 @@
             document.querySelector('.switch input').checked = true;
 
 
-            //premiumalert(); 
+            premiumalert(); 
 
-            if (proModeEnabled)  {
+            /*if (proModeEnabled)  {
                 
                 //alert("💎 PRO-Funktionen aktiviert!");
 
@@ -50653,7 +50653,7 @@
 
                 document.getElementById('converter-container').style.backgroundColor = '#333';
 
-            } 
+            } */
 
 
 
@@ -51747,7 +51747,7 @@
             // Hintergrundfarbe für das body-Element, .sidebar und Textfarbe für #frage-text ändern
             if (proModeEnabled && window.matchMedia("(orientation: landscape)").matches)  {
                 
-                alert("💎 PRO-Funktionen aktiviert!");
+                //alert("💎 PRO-Funktionen aktiviert!");
 
                 document.body.style.backgroundColor = '#333'; //document.querySelector('.switch input').checked = true;
                 document.getElementById('frage-text').style.color = '#ffffff'; // Textfarbe auf Weiß setzen
@@ -51770,7 +51770,7 @@
             
             else if (proModeEnabled && !window.matchMedia("(orientation: landscape)").matches) {
                 
-                alert("💎 PRO-Funktionen aktiviert!");
+                //alert("💎 PRO-Funktionen aktiviert!");
 
                 document.body.style.backgroundColor = '#333'; // Zurücksetzen auf Standardfarbe
                 document.getElementById('frage-text').style.color = '#ffffff'; 
@@ -51801,7 +51801,7 @@
 
             else if (!proModeEnabled && window.matchMedia("(orientation: landscape)").matches) {
                 
-                alert("❌ PRO-Funktionen deaktiviert!");
+                //alert("❌ PRO-Funktionen deaktiviert!");
                 
                 document.body.style.backgroundColor = ''; 
                 document.getElementById('frage-text').style.color = '#000000'; // Textfarbe auf Schwarz setzen
@@ -51826,7 +51826,7 @@
 
             else if (!proModeEnabled && !window.matchMedia("(orientation: landscape)").matches) {
                 
-                alert("❌ PRO-Funktionen deaktiviert!");
+                //alert("❌ PRO-Funktionen deaktiviert!");
                 
                 document.body.style.backgroundColor = ''; // Zurücksetzen auf Standardfarbe
                 document.getElementById('frage-text').style.color = '#000000'; // Textfarbe auf Schwarz setzen
