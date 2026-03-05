@@ -1651,68 +1651,6 @@
             .showPopupPosition {
                 display: block;
             }
-
-            #vocab-container {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                width: 20vw;
-                min-width: 450px; /* Breite für die zusätzlichen Buttons angepasst */
-                min-height: 150px;
-                background-color: #2b2b2b;
-                color: #f5f5f5;
-                border: 1px solid #444;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-                padding: 20px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                box-sizing: border-box; 
-            }
-
-            #prompt-word {
-                font-size: 1.2em;
-                font-weight: bold;
-                margin: 0;
-            }
-
-            #solution-word {
-                font-size: 1.1em;
-                color: #64b5f6;
-                margin-top: 10px;
-                display: none;
-            }
-
-            .buttons-min {
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .nav-btn {
-                font-size: 1.2em;
-                font-weight: bold;
-                padding: 5px 12px;
-            }
-            
-            /* Hervorhebung für den aktiven Modus-Button */
-            .mode-btn.active {
-                background-color: #624242;
-                color: #121212;
-            }
-
-            button:hover {
-                background-color: #5a5a5a;
-            }
-
-            /* NEU: Styling für den Zähler */
-            #vocab-counter {
-                font-size: 0.9em;
-                color: #a0a0a0; /* Etwas dezenter als die Hauptschrift */
-                margin-left: 8px; /* Abstand zum Icon */
-            }
             
         }
 
@@ -50107,130 +50045,7 @@
 
         let anzahlVokabeln = 0;
 
-
-
-
-
-
-
-
-
-
-
-
-        const vocabulary = [
-            { fremdsprache: "estar acostumbrado/a", deutsch: "gewohnt sein (to be used to)" },
-            { fremdsprache: "la patineta", deutsch: "das Skateboard" },
-            { fremdsprache: "retroceder", deutsch: "zurückweichen, zurückgehen" },
-            { fremdsprache: "pegar", deutsch: "kleben" },
-            { fremdsprache: "la fragilidad", deutsch: "die Zerbrechlichkeit" },
-            { fremdsprache: "mensual", deutsch: "monatlich" },
-            { fremdsprache: "elocuente", deutsch: "eloquent" },
-            { fremdsprache: "el cariño", deutsch: "die Zärtlichkeit, Zuwendung" },
-            { fremdsprache: "la ultima vez", deutsch: "das letzte Mal" },
-            { fremdsprache: "fondear", deutsch: "verankern" }
-        ];
-
-        let currentMode = 'list', listIndex = 0, randomHistory = [], randomHistoryIndex = -1;
-        let globalViewCounter = 0; // Globaler Zähler
-
-        const promptWordElement = document.getElementById('prompt-word');
-        const solutionWordElement = document.getElementById('solution-word');
-        const solutionBtn = document.getElementById('solution-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const randomModeBtn = document.getElementById('random-mode-btn');
-        const listModeBtn = document.getElementById('list-mode-btn');
-        const vocabCounterElement = document.getElementById('vocab-counter');
-
         // SPÄEP = Sprachänderungseingriffspunkt
-
-        // Zeigt nur noch den globalen Zähler an
-        function updateCounter() {
-            vocabCounterElement.textContent = globalViewCounter;
-        }
-
-        function displayVocab(index) {
-            if (index < 0 || index >= vocabulary.length) return;
-            promptWordElement.textContent = vocabulary[index].deutsch;
-            solutionWordElement.textContent = vocabulary[index].fremdsprache;
-            solutionWordElement.style.display = 'none'; 
-            updateCounter(); // Ruft den aktualisierten Zähler auf
-        }
-        
-        function shuffleIndices() {
-            const indices = Array.from(vocabulary.keys());
-            for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; }
-            return indices;
-        }
-        
-        function updateActiveButton() {
-            listModeBtn.classList.toggle('active', currentMode === 'list');
-            randomModeBtn.classList.toggle('active', currentMode === 'random');
-        }
-
-        solutionBtn.addEventListener('click', () => { solutionWordElement.style.display = 'block'; });
-        
-        prevBtn.addEventListener('click', () => {
-            if (currentMode === 'list') {
-                listIndex = (listIndex - 1 + vocabulary.length) % vocabulary.length;
-                displayVocab(listIndex);
-            } else {
-                if (randomHistoryIndex > 0) { randomHistoryIndex--; displayVocab(randomHistory[randomHistoryIndex]); }
-            }
-        });
-
-        nextBtn.addEventListener('click', () => {
-            globalViewCounter++; // Zähler erhöhen
-            if (currentMode === 'list') {
-                listIndex = (listIndex + 1) % vocabulary.length;
-                displayVocab(listIndex);
-            } else {
-                if (randomHistoryIndex >= randomHistory.length - 1) { randomHistory = shuffleIndices(); randomHistoryIndex = -1; }
-                randomHistoryIndex++;
-                displayVocab(randomHistory[randomHistoryIndex]);
-            }
-        });
-        
-        listModeBtn.addEventListener('click', () => {
-            if (currentMode === 'list') return;
-            currentMode = 'list';
-            updateActiveButton();
-            displayVocab(listIndex);
-        });
-        
-        randomModeBtn.addEventListener('click', () => {
-            if (currentMode === 'random') return;
-            currentMode = 'random';
-            updateActiveButton();
-            globalViewCounter++; // Zähler erhöhen beim Start des Zufallsmodus
-            randomHistory = shuffleIndices();
-            randomHistoryIndex = 0;
-            displayVocab(randomHistory[randomHistoryIndex]);
-        });
-
-        // Initialer Start
-        globalViewCounter = 1; // Zähler auf 1 setzen
-        updateActiveButton();
-        displayVocab(listIndex);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Aktualisiert im Sekundentakt den Vokabelzähler, Timer sowie die Uhrzeit
         function updateDisplay() {
@@ -52103,7 +51918,7 @@
                 <button id="umwandler" title= "💡 Grammatikbücher Spanisch" onclick="pdfbücher()">Bücher/PDF</button>
                 <br>
                 <button id="umwandler" title= "💡 Spanisch Hörverstehen - YouTube Playlist" onclick="hörverstehen()">Playlist</button>
-                <button id="open-vocab-popup">QuickVoc</button>
+                <button id="umwandler" title= "💡 Platzhalter" onclick="zinsrechner()">Zinsrechner</button>
                 <button id="umwandler" title= "⚠️ Wortpaar-Konverter für .json-Dateiformat - Zusatzfunktion" onclick="konvertierer(); konverter_alert()">Konverter</button>
                 <br>
                 <br>
@@ -52209,32 +52024,6 @@
 
             <div class="popup">
                 <span class="popuptext" id="myPopup"></span>
-            </div>
-
-        </div>
-
-        <!-- 2. Das Popup-Overlay mit Ihrem Vokabel-Container -->
-        <!-- (am besten vor dem </body>-Tag platzieren) -->
-        <div id="vocab-popup-overlay">
-            
-            <!-- Hier ist Ihr bestehender Container -->
-            <div id="vocab-container">
-                <!-- Optional: Fügen Sie einen Schließen-Button für eine bessere UX hinzu -->
-                <button id="close-vocab-popup">×</button> 
-                
-                <div>
-                    <p id="prompt-word"></p>
-                    <p id="solution-word"></p>
-                </div>
-                <div class="buttons-min">
-                    <button id="random-mode-btn" class="mode-btn">🎲</button>
-                    <button id="list-mode-btn" class="mode-btn active">📋</button>
-                    <span id="vocab-counter"></span>
-                    <div style="flex-grow: 1;"></div>
-                    <button id="prev-btn" class="nav-btn">&lt;</button>
-                    <button id="solution-btn">L</button>
-                    <button id="next-btn" class="nav-btn">&gt;</button>
-                </div>
             </div>
 
         </div>
