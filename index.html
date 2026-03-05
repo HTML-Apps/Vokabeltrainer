@@ -50047,6 +50047,38 @@
 
         // SPÄEP = Sprachänderungseingriffspunkt
 
+        <!-- ======================================================= -->
+        <!-- START: Code für den minimalistischen Modal-Trainer -->
+        <!-- ======================================================= -->
+
+        <style>
+            /* Stil für das Modal-Overlay */
+            #minimal-trainer-modal {
+                display: none; /* Standardmäßig versteckt */
+                position: fixed; /* Bleibt an Ort und Stelle, auch beim Scrollen */
+                z-index: 1000; /* Stellt sicher, dass es über allem anderen liegt */
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6); /* Halbtransparenter schwarzer Hintergrund */
+                
+                /* Zentriert den Inhalt */
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+
+        <!-- Das eigentliche Modal-Fenster -->
+        <div id="minimal-trainer-modal">
+            <!-- HIER wird unsere Web Component leben -->
+            <vokabel-trainer></vokabel-trainer>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- END: Code für den minimalistischen Modal-Trainer   -->
+        <!-- ======================================================= -->
+
         // Aktualisiert im Sekundentakt den Vokabelzähler, Timer sowie die Uhrzeit
         function updateDisplay() {
             const vokabelCounterElem = document.getElementById('vokabel-counter');
@@ -52240,40 +52272,12 @@
         document.getElementById("cancelPosition").addEventListener("click", function() {
             document.getElementById("positionPopup").classList.remove("showPopupPosition");
         });
+
+
   
     </script>
 
-    <!-- ======================================================= -->
-    <!-- START: Code für den minimalistischen Modal-Trainer -->
-    <!-- ======================================================= -->
 
-    <style>
-        /* Stil für das Modal-Overlay */
-        #minimal-trainer-modal {
-            display: none; /* Standardmäßig versteckt */
-            position: fixed; /* Bleibt an Ort und Stelle, auch beim Scrollen */
-            z-index: 1000; /* Stellt sicher, dass es über allem anderen liegt */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Halbtransparenter schwarzer Hintergrund */
-            
-            /* Zentriert den Inhalt */
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
-
-    <!-- Das eigentliche Modal-Fenster -->
-    <div id="minimal-trainer-modal">
-        <!-- HIER wird unsere Web Component leben -->
-        <vokabel-trainer></vokabel-trainer>
-    </div>
-
-    <!-- ======================================================= -->
-    <!-- END: Code für den minimalistischen Modal-Trainer   -->
-    <!-- ======================================================= -->
 
 </body>
 </html>
