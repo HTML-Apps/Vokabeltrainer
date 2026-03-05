@@ -51869,82 +51869,6 @@
                 premiumButton.classList.remove('show');
             }
           }
-
-        // === NEUER CODE ZUM HINZUFÜGEN (ANGEPASSTE VERSION) ===
-
-        // 1. Elemente holen, die wir steuern wollen
-        const modal = document.getElementById('minimal-trainer-modal');
-        const vokabelTrainerComponent = document.querySelector('vokabel-trainer');
-
-
-        // 2. Steuerungsfunktionen für das Modal
-
-        /**
-         * Öffnet den minimalistischen Trainer mit einer spezifischen Vokabelliste.
-         * @param {string} sprache - Der Name der Sprache (z.B. "Englisch").
-         * @param {string} listenName - Der Name der Liste (z.B. "Idioms").
-         */
-        function starteMinimalTrainerFürListe(sprache, listenName) {
-            const sprachListen = vokabellisten[sprache];
-            if (!sprachListen) {
-                console.error(`Sprache "${sprache}" nicht gefunden.`);
-                return;
-            }
-
-            const gewählteListe = sprachListen.find(liste => liste.name === listenName);
-            if (!gewählteListe) {
-                console.error(`Liste "${listenName}" in Sprache "${sprache}" nicht gefunden.`);
-                return;
-            }
-
-            // Die Vokabeln an die Komponente übergeben
-            vokabelTrainerComponent.setVocabulary(gewählteListe.vokabeln);
-            
-            // Das Modal sichtbar machen
-            modal.style.display = 'flex';
-        }
-
-        /**
-         * Öffnet den Trainer mit ALLEN Vokabeln einer kompletten Sprache.
-         * @param {string} sprache - Der Name der Sprache (z.B. "Französisch").
-         */
-        function starteMinimalTrainerFürSprache(sprache) {
-            const sprachListen = vokabellisten[sprache];
-            if (!sprachListen) {
-                console.error(`Sprache "${sprache}" nicht gefunden.`);
-                return;
-            }
-
-            // Alle Vokabel-Arrays der Sprache zu einem einzigen großen Array zusammenfügen
-            const alleVokabeln = sprachListen.flatMap(liste => liste.vokabeln);
-
-            if (alleVokabeln.length === 0) {
-                console.error(`Keine Vokabeln für die Sprache "${sprache}" zum Zusammenfügen gefunden.`);
-                return;
-            }
-
-            // Die gesammelten Vokabeln an die Komponente übergeben
-            vokabelTrainerComponent.setVocabulary(alleVokabeln);
-            
-            // Das Modal sichtbar machen
-            modal.style.display = 'flex';
-        }
-
-        /**
-         * Schließt den minimalistischen Trainer.
-         */
-        function schliesseMinimalTrainer() {
-            modal.style.display = 'none';
-        }
-
-
-        // 3. "Schließen"-Mechanismus hinzufügen
-        // Schließt das Modal, wenn man auf den dunklen Hintergrund klickt
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                schliesseMinimalTrainer();
-            }
-        });
     
     </script>
 
@@ -51994,7 +51918,7 @@
                 <button id="umwandler" title= "💡 Grammatikbücher Spanisch" onclick="pdfbücher()">Bücher/PDF</button>
                 <br>
                 <button id="umwandler" title= "💡 Spanisch Hörverstehen - YouTube Playlist" onclick="hörverstehen()">Playlist</button>
-                <button id="umwandler" title= "💡 Minimalistischer Vokabeltrainer" onclick="starteMinimalTrainerFürListe('Spanisch', 'Wortschatz Hendrik')">QuickVok</button>
+                <button id="umwandler" title= "💡 Platzhalter" onclick="zinsrechner()">Zinsrechner</button>
                 <button id="umwandler" title= "⚠️ Wortpaar-Konverter für .json-Dateiformat - Zusatzfunktion" onclick="konvertierer(); konverter_alert()">Konverter</button>
                 <br>
                 <br>
@@ -52242,38 +52166,5 @@
         });
   
     </script>
-
-    <!-- ======================================================= -->
-    <!-- START: Code für den minimalistischen Modal-Trainer -->
-    <!-- ======================================================= -->
-
-    <style>
-        /* Stil für das Modal-Overlay */
-        #minimal-trainer-modal {
-            display: none; /* Standardmäßig versteckt */
-            position: fixed; /* Bleibt an Ort und Stelle, auch beim Scrollen */
-            z-index: 1000; /* Stellt sicher, dass es über allem anderen liegt */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Halbtransparenter schwarzer Hintergrund */
-            
-            /* Zentriert den Inhalt */
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
-
-    <!-- Das eigentliche Modal-Fenster -->
-    <div id="minimal-trainer-modal">
-        <!-- HIER wird unsere Web Component leben -->
-        <vokabel-trainer></vokabel-trainer>
-    </div>
-
-    <!-- ======================================================= -->
-    <!-- END: Code für den minimalistischen Modal-Trainer   -->
-    <!-- ======================================================= -->
-
 </body>
 </html>
