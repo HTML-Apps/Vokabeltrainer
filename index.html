@@ -50585,7 +50585,12 @@
 
             // Haupt-App-Dialog
             document.getElementById('antwort-input').value = '';
-            document.getElementById('antwort-input').focus();
+
+            // Prüfen, ob der Light-Mode-Overlay NICHT sichtbar ist
+            const overlay = document.getElementById('lightModeOverlay');
+            if (overlay.style.display !== 'flex') {
+                document.getElementById('antwort-input').focus(); // Nur fokussieren, wenn Overlay aus ist
+}
             document.getElementById('dialog').style.display = 'block';
 
             // Light-Mode-Dialog aktualisieren, falls sichtbar
@@ -50726,7 +50731,13 @@
                 }
 
                 document.getElementById('antwort-input').value = '';
-                document.getElementById('antwort-input').focus();
+                
+                // Prüfen, ob der Light-Mode-Overlay NICHT sichtbar ist
+                const overlay = document.getElementById('lightModeOverlay');
+                if (overlay.style.display !== 'flex') {
+                    document.getElementById('antwort-input').focus(); // Nur fokussieren, wenn Overlay aus ist
+                }
+
             } else if (historyIndex === 1) { 
                 // Spezielle Behandlung, falls genau eine vorherige Vokabel übrig ist
                 historyIndex--; 
