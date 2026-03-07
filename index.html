@@ -50265,10 +50265,6 @@
 
         let anzahlVokabeln = 0;
 
-        // Prüft, ob "?admin=true" in der URL steht
-        const urlParams = new URLSearchParams(window.location.search);
-        const isAdmin = urlParams.get('admin') === 'true';
-
         // FIREBASE INITIALISIERUNG HINZUFÜGEN
         const firebaseConfig = {
             apiKey: "AIzaSyDNx8HzHvGb7aBOsopIWz8-KWD3cnoNqWg",
@@ -50838,10 +50834,6 @@
             } 
         }
 
-        // ERSETZEN SIE IHRE GESAMTE window.onload FUNKTION HIERMIT
-
-        // LÖSCHEN SIE IHRE ALTE window.onload FUNKTION UND ERSETZEN SIE SIE DURCH DIESE:
-
         window.onload = async function() {
             
             openNav();
@@ -50899,15 +50891,8 @@
             // --- ENDE LOGIK FÜR LIGHT-MODE ---
 
             // Eulen-Button Event
-            //document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
-            
-            // Eulen-Button verstecken, wenn nicht Admin
-            const owlBtn = document.querySelector(".owl-button");
-            if (!isAdmin) {
-                owlBtn.style.display = "none";
-            } else {
-                owlBtn.onclick = saveCurrentVokabelAsSchwierig;
-            }
+            document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
+
         };
 
 
