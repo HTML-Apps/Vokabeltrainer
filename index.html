@@ -1872,6 +1872,10 @@
 
     </style>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
     <script>
         let vokabellisten = {
             "Spanisch": [
@@ -50261,8 +50265,22 @@
 
         let anzahlVokabeln = 0;
 
+        // FIREBASE INITIALISIERUNG HINZUFÜGEN
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNx8HzHvGb7aBOsopIWz8-KWD3cnoNqWg",
+            authDomain: "daily-companion-24975.firebaseapp.com",
+            projectId: "daily-companion-24975",
+            storageBucket: "daily-companion-24975.firebasestorage.app",
+            messagingSenderId: "330854991329",
+            appId: "1:330854991329:web:2d8a4060f8bd50372d3ea0",
+            measurementId: "G-52MKKC9GCS"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const firestoreDB = firebase.firestore();
+
         //////////////////////////////////////////////////////////////////////////
-        // SPÄEP = Sprachänderungseingriffspunkt
+        //////////////// SPÄEP = Sprachänderungseingriffspunkt///////////////////
         /////////////////////////////////////////////////////////////////////////
 
         function toggleLightMode() {
@@ -50483,22 +50501,12 @@
                 let vokabeln;
 
                 if (listeIndex === 'Schwierige Vokabel') {
-                    vokabeln = await new Promise(resolve => {
-                        initDB(function(db) {
-                            const transaction = db.transaction('vokabeln_db', 'readonly');
-                            const store = transaction.objectStore('vokabeln_db');
-                            const getAllRequest = store.getAll();
-
-                            getAllRequest.onsuccess = function() {
-                                resolve(getAllRequest.result.filter(vokabel => vokabel.sprache === sprache));
-                            };
-
-                            getAllRequest.onerror = function(event) {
-                                console.error('Fehler beim Laden der schwierigen Vokabeln:', event);
-                                resolve([]);
-                            };
-                        });
-                    });
+                    const snapshot = await firestoreDB.collection('schwierigeVokabeln')
+                        .where('sprache', '==', sprache)
+                        .get();
+                        
+                    // Wandelt die Firebase-Dokumente in ein Array von Vokabel-Objekten um
+                    vokabeln = snapshot.docs.map(doc => doc.data());
                 } else {
                     vokabeln = vokabellisten[sprache][listeIndex].vokabeln;
                 }
@@ -50611,36 +50619,35 @@
             vokabelDisplay.innerHTML = ''; // Leere das Display vor der neuen Anzeige
         
             if (liste === 'Schwierige Vokabel') {
-                initDB(function(db) {
-                    const transaction = db.transaction('vokabeln_db', 'readonly');
-                    const store = transaction.objectStore('vokabeln_db');
-                    const getAllRequest = store.getAll();
-        
-                    getAllRequest.onsuccess = function() {
-                        const schwierigeVokabeln = getAllRequest.result.filter(vokabel => vokabel.sprache === sprache);
-        
-                        if (schwierigeVokabeln.length > 0) {
-                            schwierigeVokabeln.forEach((vokabel, index) => {
+                firestoreDB.collection('schwierigeVokabeln')
+                    .where('sprache', '==', sprache)
+                    .get()
+                    .then(snapshot => {
+                        if (!snapshot.empty) {
+                            let index = 0;
+                            snapshot.forEach(doc => {
+                                const vokabel = doc.data();
+                                const docId = doc.id; // Das ist die Firebase Dokument-ID
+
                                 let vokabelPair = document.createElement('div');
                                 vokabelPair.className = 'vokabel-paar';
                                 vokabelPair.innerHTML = `
                                     <span class="vokabel-nummer">${index + 1}.</span>
                                     <span>${vokabel.deutsch}</span>
                                     <span>${vokabel.fremdsprache}</span>
-                                    <button id="deleteButton_${vokabel.id}" class="delete-button" onclick="deleteVokabel(${vokabel.id})">X</button>
+                                    <button id="deleteButton_${docId}" class="delete-button" onclick="deleteVokabel('${docId}')">X</button>
                                 `;
                                 vokabelDisplay.appendChild(vokabelPair);
+                                index++;
                             });
                         } else {
                             vokabelDisplay.innerHTML = '<p>💡 Keine schwierigen Vokabeln gefunden<br>➞ Fügen Sie durch das Klicken des 🦉-Buttons eine Vokabel hinzu</p>';
                         }
-                    };
-        
-                    getAllRequest.onerror = function(event) {
-                        console.error('Fehler beim Laden der schwierigen Vokabeln:', event);
-                    };
-                });
-            } else {
+                    })
+                    .catch(error => console.error('Fehler beim Anzeigen der schwierigen Vokabeln:', error));
+            }
+            
+            else {
                 const vokabeln = vokabellisten[sprache] && vokabellisten[sprache][liste]?.vokabeln;
         
                 if (vokabeln && vokabeln.length > 0) {
@@ -50665,35 +50672,16 @@
             vokabelDisplay.style.display = 'none';
         }
 
-        function deleteVokabel(id) {
-            const sprache = document.getElementById("sprache").value;
-            if (!sprache) {
-                alert('Bitte wählen Sie eine Sprache aus');
-                return;
+        async function deleteVokabel(docId) {
+            try {
+                // Löscht das Dokument anhand der Firebase ID
+                await firestoreDB.collection('schwierigeVokabeln').doc(docId).delete();
+                alert('❗ Vokabel gelöscht!');
+                showVokabelListe(); // Liste visuell aktualisieren
+                addSchwierigeOptionToDropdown(); // Dropdown-Zähler aktualisieren
+            } catch (error) {
+                console.error('Fehler beim Löschen der Vokabel:', error);
             }
-        
-            // Öffnen Sie die IndexedDB für die angegebene Sprache
-            const request = indexedDB.open('SchwierigeVokabelnDB', 3);
-        
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                const transaction = db.transaction('vokabeln_db', 'readwrite');
-                const store = transaction.objectStore('vokabeln_db');
-                const deleteRequest = store.delete(id);
-        
-                deleteRequest.onsuccess = function() {
-                    alert('❗ Vokabel gelöscht!');
-                    showVokabelListe(); // Liste aktualisieren
-                };
-        
-                deleteRequest.onerror = function(event) {
-                    console.error('Fehler beim Löschen der Vokabel:', event);
-                };
-            };
-        
-            request.onerror = function(event) {
-                console.error('Fehler beim Öffnen der Datenbank:', event);
-            };
         }
 
         // Funktion zum Laden der vorherigen Vokabel 
@@ -50898,14 +50886,6 @@
             premiumalert(); 
             proSwitch.addEventListener('change', premiumalert);
 
-            // Allgemeine DB initialisieren
-            await new Promise((resolve) => {
-                initDB(function(db) {
-                    console.log(`Allgemeine Datenbank initialisiert`);
-                    resolve();
-                });
-            });
-
             updateButtonColor();
 
             // --- KORREKTE UND FUNKTIONIERENDE LOGIK FÜR LIGHT-MODE ---
@@ -51013,23 +50993,10 @@
             const listeIndex = document.getElementById("listeAuswahl").value;
 
             if (listeIndex === 'Schwierige Vokabel') {
-                return new Promise(resolve => {
-                    initDB(function(db) {
-                        const transaction = db.transaction('vokabeln_db', 'readonly');
-                        const store = transaction.objectStore('vokabeln_db');
-                        const getAllRequest = store.getAll();
-
-                        getAllRequest.onsuccess = function() {
-                            const vokabeln = getAllRequest.result.filter(vokabel => vokabel.sprache === sprache);
-                            resolve(vokabeln.length);
-                        };
-
-                        getAllRequest.onerror = function(event) {
-                            console.error('Fehler beim Laden der schwierigen Vokabeln:', event);
-                            resolve(0);
-                        };
-                    });
-                });
+                const snapshot = await firestoreDB.collection('schwierigeVokabeln')
+                    .where('sprache', '==', sprache)
+                    .get();
+                return snapshot.size;
             } else {
                 const vokabeln = vokabellisten[sprache][listeIndex].vokabeln;
                 return vokabeln.length;
@@ -51071,98 +51038,52 @@
                 openNav();
             }
         });
-
-        function initDB(callback) {
-
-            const request = indexedDB.open('SchwierigeVokabelnDB', 3);
-        
-            request.onupgradeneeded = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('vokabeln_db')) {
-                    const objectStore = db.createObjectStore('vokabeln_db', { keyPath: 'id', autoIncrement: true });
-                    objectStore.createIndex('uniqueVokabelIndex', ['sprache', 'fremdsprache', 'deutsch'], { unique: true });
-                    console.log(`Object store "vokabeln_db" wurde erstellt.`);
-                }
-            };
-        
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                console.log(`Datenbank "${db.name}" erfolgreich geöffnet.`);
-                console.log('Verfügbare Object Stores:', Array.from(db.objectStoreNames));
-        
-                if (!db.objectStoreNames.contains('vokabeln_db')) {
-                    console.error('Fehler: Der Object Store "vokabeln_db" existiert nicht.');
-                } else {
-                    callback(db);
-                }
-            };
-        
-            request.onerror = function(event) {
-                console.error('Fehler beim Öffnen der Datenbank:', event);
-                console.log('Datenbank:', 'SchwierigeVokabelnDB');
-                console.log('Error:', event.target.error);
-            };
-        }
         
         function initializeApp() {
             const sprache = document.getElementById("sprache").value;
             if (sprache) {
-                initDB(function(db) {
-                    addSchwierigeOptionToDropdown(sprache);
-                });
+                addSchwierigeOptionToDropdown();
             }
         }
         
         // Funktion zum Speichern der aktuellen Vokabel in der Datenbank
-        function saveCurrentVokabelAsSchwierig() {
+        async function saveCurrentVokabelAsSchwierig() {
             const sprache = document.getElementById("sprache").value;
-        
+
             if (!sprache || !currentVokabel) {
                 alert('Bitte wählen Sie eine Sprache und Vokabel aus');
-                console.log("Sprache oder aktuelle Vokabel fehlt.", sprache, currentVokabel);
                 return;
             }
-        
-            console.log("Speichern der Vokabel:", currentVokabel);
-        
-            initDB(function(db) {
-                const transaction = db.transaction('vokabeln_db', 'readwrite');
-                const store = transaction.objectStore('vokabeln_db');
-        
-                // Überprüfen, ob die Vokabel bereits vorhanden ist
-                const checkRequest = store.index('uniqueVokabelIndex').get([sprache, currentVokabel.fremdsprache, currentVokabel.deutsch]);
-        
-                checkRequest.onsuccess = function(event) {
-                    console.log("Check Vokabel vorhanden:", event.target.result);
-                    if (event.target.result) {
-                        alert('Diese Vokabel ist bereits als schwierig gespeichert');
-                    } else {
-                        // Vokabel hinzufügen
-                        const vokabel = {
-                            sprache: sprache,
-                            fremdsprache: currentVokabel.fremdsprache,
-                            deutsch: currentVokabel.deutsch,
-                            liste: 'Schwierige Vokabel' // Kennzeichnung als schwierige Vokabel
-                        };
-        
-                        const addRequest = store.add(vokabel);
-        
-                        addRequest.onsuccess = function() {
-                            console.log("Vokabel erfolgreich gespeichert:", vokabel);
-                            alert(`🦉 Schwierige Vokabel erkannt! \n➞ Deutsch: ${currentVokabel.deutsch} \n➞ ${sprache}: ${vokabel.fremdsprache}`);
-                            addSchwierigeOptionToDropdown(sprache);
-                        };
-        
-                        addRequest.onerror = function(event) {
-                            console.error('Fehler beim Hinzufügen der Vokabel:', event.target.error);
-                        };
-                    }
+
+            try {
+                // 1. Prüfen, ob die Vokabel in dieser Sprache schon existiert
+                const snapshot = await firestoreDB.collection('schwierigeVokabeln')
+                    .where('sprache', '==', sprache)
+                    .where('fremdsprache', '==', currentVokabel.fremdsprache)
+                    .where('deutsch', '==', currentVokabel.deutsch)
+                    .get();
+
+                if (!snapshot.empty) {
+                    alert('Diese Vokabel ist bereits als schwierig gespeichert');
+                    return;
+                }
+
+                // 2. Vokabel speichern
+                const vokabel = {
+                    sprache: sprache,
+                    fremdsprache: currentVokabel.fremdsprache,
+                    deutsch: currentVokabel.deutsch,
+                    liste: 'Schwierige Vokabel'
                 };
-        
-                checkRequest.onerror = function(event) {
-                    console.error('Fehler beim Überprüfen der Vokabeln:', event.target.error);
-                };
-            });
+
+                await firestoreDB.collection('schwierigeVokabeln').add(vokabel);
+                
+                alert(`🦉 Schwierige Vokabel erkannt! \n➞ Deutsch: ${currentVokabel.deutsch} \n➞ ${sprache}: ${vokabel.fremdsprache}`);
+                addSchwierigeOptionToDropdown(); // Dropdown aktualisieren
+
+            } catch (error) {
+                console.error('Fehler beim Speichern der Vokabel in Firebase:', error);
+            }
         }
         
         // Funktion zum Aktualisieren des Dropdowns für die Vokabellisten inklusive der Liste "Schwierige Vokabel"
@@ -51183,39 +51104,31 @@
             addSchwierigeOptionToDropdown();
         }
         
-        function addSchwierigeOptionToDropdown() {
+        async function addSchwierigeOptionToDropdown() {
             const sprache = document.getElementById("sprache").value;
-        
             if (!sprache) return;
-        
-            initDB(function(db) {
-                const transaction = db.transaction('vokabeln_db', 'readonly');
-                const store = transaction.objectStore('vokabeln_db');
-                const schwierigeVokabeln = [];
-        
-                const index = store.index('uniqueVokabelIndex');
-                index.openCursor().onsuccess = function(event) {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        const vokabel = cursor.value;
-                        if (vokabel.sprache === sprache && vokabel.liste === 'Schwierige Vokabel') {
-                            schwierigeVokabeln.push(vokabel);
-                        }
-                        cursor.continue();
-                    } else {
-                        // Wenn es schwierige Vokabeln gibt, füge sie dem Dropdown hinzu
-                        const bestehendeOption = Array.from(document.getElementById('listeAuswahl').options).find(option => option.value === 'Schwierige Vokabel');
-                        if (schwierigeVokabeln.length > 0 && !bestehendeOption) {
-                            const option = document.createElement('option');
-                            option.value = 'Schwierige Vokabel';
-                            option.textContent = `Schwierige Vokabeln (${schwierigeVokabeln.length})`;
-                            document.getElementById('listeAuswahl').appendChild(option);
-                        } else if (bestehendeOption) {
-                            bestehendeOption.textContent = `Schwierige Vokabeln (${schwierigeVokabeln.length})`;
-                        }
-                    }
-                };
-            });
+
+            try {
+                // Zähle alle schwierigen Vokabeln der aktuellen Sprache
+                const snapshot = await firestoreDB.collection('schwierigeVokabeln')
+                    .where('sprache', '==', sprache)
+                    .get();
+
+                const count = snapshot.size;
+                const listeAuswahl = document.getElementById('listeAuswahl');
+                const bestehendeOption = Array.from(listeAuswahl.options).find(option => option.value === 'Schwierige Vokabel');
+
+                if (count > 0 && !bestehendeOption) {
+                    const option = document.createElement('option');
+                    option.value = 'Schwierige Vokabel';
+                    option.textContent = `Schwierige Vokabeln (${count})`;
+                    listeAuswahl.appendChild(option);
+                } else if (bestehendeOption) {
+                    bestehendeOption.textContent = `Schwierige Vokabeln (${count})`;
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Dropdown-Option aus Firebase:', error);
+            }
         }
 
         function fillAnswer(char) {
