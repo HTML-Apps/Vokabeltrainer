@@ -50603,47 +50603,56 @@
 
 
         async function showVokabelListe() {
-            const liste = document.getElementById('listeAuswahl').value;
             const sprache = document.getElementById("sprache").value;
-            const vokabelDisplay = document.getElementById('vokabel-display');
-        
-            // Schalte die Anzeige um
-            if (vokabelDisplay.style.display === 'none') {
-                vokabelDisplay.style.display = 'block';
-            }
-        
-            vokabelDisplay.innerHTML = ''; // Leere das Display vor der neuen Anzeige
-        
+            const liste = document.getElementById("listeAuswahl").value;
+            const vokabelDisplay = document.getElementById("vokabelDisplay");
+            
+            if (!vokabelDisplay) return;
+            vokabelDisplay.innerHTML = "";
+
             if (liste === 'Schwierige Vokabel') {
-                const snap = await firestoreDB.collection('schwierigeVokabeln').where('sprache', '==', sprache).get();
-                snap.forEach((doc, i) => {
-                    const v = doc.data();
-                    const div = document.createElement('div');
-                    div.className = 'vokabel-paar';
-                    div.innerHTML = `<span>${i+1}.</span> <span>${v.deutsch}</span> <span>${v.fremdsprache}</span> 
-                                    <button class="delete-button" onclick="deleteVokabel('${doc.id}')">X</button>`;
-                    vokabelDisplay.appendChild(div);
-                });
+                try {
+                    const snap = await firestoreDB.collection('schwierigeVokabeln')
+                        .where('sprache', '==', sprache)
+                        .get();
+
+                    if (!snap.empty) {
+                        let counter = 1; // Wir starten explizit bei 1
+                        
+                        snap.forEach((doc) => {
+                            const v = doc.data();
+                            const docId = doc.id;
+
+                            const vokabelPair = document.createElement('div');
+                            vokabelPair.className = 'vokabel-paar';
+                            
+                            // isAdmin Prüfung für den Lösch-Button
+                            const deleteBtn = (typeof isAdmin !== 'undefined' && isAdmin) 
+                                ? `<button class="delete-button" onclick="deleteVokabel('${docId}')">X</button>` 
+                                : '';
+
+                            vokabelPair.innerHTML = `
+                                <span class="vokabel-nummer">${counter}.</span>
+                                <span>${v.deutsch}</span>
+                                <span>${v.fremdsprache}</span>
+                                ${deleteBtn}
+                            `;
+                            
+                            vokabelDisplay.appendChild(vokabelPair);
+                            counter++; // Zähler für die nächste Zeile erhöhen
+                        });
+                    } else {
+                        vokabelDisplay.innerHTML = '<p>Keine schwierigen Vokabeln gefunden.</p>';
+                    }
+                } catch (error) {
+                    console.error("Fehler beim Laden der Liste:", error);
+                }
+            } else {
+                // Dein alter Code für die statischen Listen (vokabellisten[sprache][liste])
+                // Stelle sicher, dass dort auch ein 'index' oder 'counter' genutzt wird
             }
             
-            else {
-                const vokabeln = vokabellisten[sprache] && vokabellisten[sprache][liste]?.vokabeln;
-        
-                if (vokabeln && vokabeln.length > 0) {
-                    vokabeln.forEach((vokabel, index) => {
-                        let vokabelPair = document.createElement('div');
-                        vokabelPair.className = 'vokabel-paar';
-                        vokabelPair.innerHTML = `
-                            <span class="vokabel-nummer">${index + 1}.</span>
-                            <span>${vokabel.deutsch}</span>
-                            <span>${vokabel.fremdsprache}</span>
-                        `;
-                        vokabelDisplay.appendChild(vokabelPair);
-                    });
-                } else {
-                    vokabelDisplay.innerHTML = '<p>Keine Vokabeln in dieser Liste gefunden</p>';
-                }
-            }
+            document.getElementById("vokabelListe").classList.add("show");
         }
         
         function hideVokabelListe() {
