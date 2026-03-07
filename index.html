@@ -50854,9 +50854,6 @@
             if (sprache) {
                 addSchwierigeOptionToDropdown(sprache);
             }
-
-            // Eulen-Button Event
-            document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
             
             // Erzwinge Pro-Modus beim Laden:
             const proSwitch = document.querySelector('.switch input');
@@ -50896,6 +50893,9 @@
                 document.getElementById('random-mode-btn-light').classList.remove('active');
             });
             // --- ENDE LOGIK FÜR LIGHT-MODE ---
+
+            // Eulen-Button Event
+            document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
         };
 
 
