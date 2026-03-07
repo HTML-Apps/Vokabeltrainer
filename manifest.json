@@ -10,11 +10,13 @@
       "src": "book.png",
       "sizes": "192x192",
       "type": "image/png"
+      "purpose": "any"
     },
     {
       "src": "cook.png",
       "sizes": "512x512",
       "type": "image/png"
+      "purpose": "any"
     }
   ]
 }
