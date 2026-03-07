@@ -50647,12 +50647,25 @@
                 } catch (error) {
                     console.error("Fehler beim Laden der Liste:", error);
                 }
-            } else {
-                // Dein alter Code für die statischen Listen (vokabellisten[sprache][liste])
-                // Stelle sicher, dass dort auch ein 'index' oder 'counter' genutzt wird
-            }
             
-            document.getElementById("vokabelListe").classList.add("show");
+            else {
+                const vokabeln = vokabellisten[sprache] && vokabellisten[sprache][liste]?.vokabeln;
+        
+                if (vokabeln && vokabeln.length > 0) {
+                    vokabeln.forEach((vokabel, index) => {
+                        let vokabelPair = document.createElement('div');
+                        vokabelPair.className = 'vokabel-paar';
+                        vokabelPair.innerHTML = `
+                            <span class="vokabel-nummer">${index + 1}.</span>
+                            <span>${vokabel.deutsch}</span>
+                            <span>${vokabel.fremdsprache}</span>
+                        `;
+                        vokabelDisplay.appendChild(vokabelPair);
+                    });
+                } else {
+                    vokabelDisplay.innerHTML = '<p>Keine Vokabeln in dieser Liste gefunden</p>';
+                }
+            }
         }
         
         function hideVokabelListe() {
