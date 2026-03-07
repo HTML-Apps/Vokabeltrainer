@@ -50895,7 +50895,14 @@
             // --- ENDE LOGIK FÜR LIGHT-MODE ---
 
             // Eulen-Button Event
-            document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
+            //document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
+            // Eulen-Button verstecken, wenn nicht Admin
+            const owlBtn = document.querySelector(".owl-button");
+            if (!isAdmin) {
+                owlBtn.style.display = "none";
+            } else {
+                owlBtn.onclick = saveCurrentVokabelAsSchwierig;
+            }
         };
 
 
