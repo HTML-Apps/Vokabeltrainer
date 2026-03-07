@@ -51869,8 +51869,8 @@
             if (proModeEnabled && window.matchMedia("(orientation: landscape)").matches) {
                 document.body.style.backgroundColor = '#333';
                 document.getElementById('frage-text').style.color = '#ffffff';
-
-                // ... (anderer Code bleibt gleich) ...
+                document.getElementsByClassName('sonderzeichen')[0].style.color = '#ffffff';
+                document.getElementById('vokabel-display').style.color = '#ffffff';
                 
                 // Nur den Stil ändern, wenn der Container existiert
                 if (converterContainer) {
@@ -51880,8 +51880,9 @@
             } else if (proModeEnabled && !window.matchMedia("(orientation: landscape)").matches) {
                 document.body.style.backgroundColor = '#333';
                 document.getElementById('frage-text').style.color = '#ffffff'; 
-
-                // ... (anderer Code bleibt gleich) ...
+                document.getElementById('vokabel-display').style.color = '#ffffff';
+                document.getElementsByClassName('counter-display')[0].style.color = '#ffffff';
+                document.getElementById('timer').style.color = '#ffffff';
 
                 // Nur den Stil ändern, wenn der Container existiert
                 if (converterContainer) {
@@ -51893,8 +51894,8 @@
             } else if (!proModeEnabled && window.matchMedia("(orientation: landscape)").matches) {
                 document.body.style.backgroundColor = ''; 
                 document.getElementById('frage-text').style.color = '#000000';
-                
-                // ... (anderer Code bleibt gleich) ...
+                document.getElementsByClassName('sonderzeichen')[0].style.color = '#000000';
+                document.getElementById('vokabel-display').style.color = '#000000';
 
                 // Nur den Stil ändern, wenn der Container existiert
                 if (converterContainer) {
@@ -51904,8 +51905,6 @@
             } else if (!proModeEnabled && !window.matchMedia("(orientation: landscape)").matches) {
                 document.body.style.backgroundColor = '';
                 document.getElementById('frage-text').style.color = '#000000';
-
-                // ... (anderer Code bleibt gleich) ...
 
                 // Nur den Stil ändern, wenn der Container existiert
                 if (converterContainer) {
