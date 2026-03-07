@@ -51045,7 +51045,9 @@
                         liste: 'Schwierige Vokabel'
                     });
 
-                    alert('🦉 Gespeichert!');
+                    //alert('🦉 Gespeichert!');
+                    alert(`🦉 Schwierige Vokabel erkannt! \n➞ Deutsch: ${currentVokabel.deutsch} \n➞ ${sprache}: ${vokabel.fremdsprache}`);
+
                     addSchwierigeOptionToDropdown();
                 } catch (e) { console.error(e); }
             }
