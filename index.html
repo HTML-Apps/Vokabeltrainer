@@ -50277,33 +50277,37 @@
         }
 
         function toggleAdminMode() {
+            // Status umkehren
             isAdmin = !isAdmin;
+
+            // URL anpassen
+            const url = new URL(window.location.href);
+            if (isAdmin) {
+                url.searchParams.set('isadmin', ''); // Fügt ?isadmin hinzu
+            } else {
+                url.searchParams.delete('isadmin'); // Entfernt ?isadmin
+            }
+
+            // Die URL im Browser-Verlauf aktualisieren, ohne die Seite neu zu laden
+            window.history.replaceState({}, '', url);
+
+            // Sichtbarkeit der Eulen-Buttons sofort aktualisieren
             updateAdminUI();
 
-            // URL aktualisieren, ohne die Seite neu zu laden
-            const newUrl = new URL(window.location);
-            if (isAdmin) {
-                newUrl.searchParams.set('isadmin', '');
-            } else {
-                newUrl.searchParams.delete('isadmin');
-            }
-            window.history.pushState({}, '', newUrl);
-            
-            // Kurzes Feedback für dich
-            alert(isAdmin ? "🦉 Admin-Modus aktiviert!" : "🔒 Admin-Modus deaktiviert!");
+            // Kurzes visuelles Feedback
+            console.log("Admin-Modus: " + (isAdmin ? "AN" : "AUS"));
+            alert(isAdmin ? "🦉 Admin-Modus aktiviert" : "🔒 Admin-Modus deaktiviert");
         }
 
         function updateAdminUI() {
             const euleBtn = document.getElementById('button-eule');
             const euleBtnLight = document.getElementById('button-eule-light');
             
-            if (isAdmin) {
-                if (euleBtn) euleBtn.style.display = 'inline-block';
-                if (euleBtnLight) euleBtnLight.style.display = 'inline-block';
-            } else {
-                if (euleBtn) euleBtn.style.display = 'none';
-                if (euleBtnLight) euleBtnLight.style.display = 'none';
-            }
+            // Wenn isAdmin wahr ist, zeigen wir die Buttons, sonst verstecken wir sie
+            const displayStyle = isAdmin ? 'inline-block' : 'none';
+            
+            if (euleBtn) euleBtn.style.display = displayStyle;
+            if (euleBtnLight) euleBtnLight.style.display = displayStyle;
         }
         // --- ENDE ADMIN MODUS LOGIK ---
 
@@ -51028,15 +51032,6 @@
             document.querySelector('.sidebar').classList.remove('open');
             document.getElementById('main').classList.remove('open');
         }
-        
-        /*document.querySelector('.openbtn').addEventListener('click', function() {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar.classList.contains('open')) {
-                closeNav();
-            } else {
-                openNav();
-            }
-        });*/
         
         let startX;
         
@@ -52171,32 +52166,30 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             
-            let titleClickCount = 0;
-            let titleClickTimer;
+            // Variable für die Klick-Erkennung außerhalb des Listeners definieren
+            let adminClickCount = 0;
+            let adminClickTimer;
 
             document.querySelector('.openbtn').addEventListener('click', function() {
-                // Standard-Logik: Sidebar öffnen/schließen
-                const sidebar = document.querySelector('.sidebar');
-                if (sidebar.classList.contains('open')) {
-                    closeNav();
-                } else {
-                    openNav();
+                // 1. Die Sidebar-Funktion (openNav/closeNav) wurde hier entfernt.
+                // Der Button reagiert jetzt nur noch auf den Klick-Zähler.
+
+                // 2. Triple-Click Logik
+                adminClickCount++;
+
+                if (adminClickCount === 1) {
+                    // Starte ein Zeitfenster von 800ms für die weiteren Klicks
+                    adminClickTimer = setTimeout(function() {
+                        adminClickCount = 0;
+                    }, 800);
                 }
 
-                // Triple-Click Logik für den Admin-Modus
-                titleClickCount++;
-                
-                if (titleClickCount === 1) {
-                    // Starte einen Timer: Wenn nicht innerhalb von 600ms dreimal geklickt wird, setze den Zähler zurück
-                    titleClickTimer = setTimeout(function() {
-                        titleClickCount = 0; 
-                    }, 600); 
-                }
-
-                if (titleClickCount === 3) {
-                    clearTimeout(titleClickTimer); // Timer stoppen
-                    titleClickCount = 0; // Zähler zurücksetzen
-                    toggleAdminMode(); // Admin-Modus umschalten
+                if (adminClickCount === 3) {
+                    clearTimeout(adminClickTimer);
+                    adminClickCount = 0;
+                    
+                    // Rufe die Toggle-Funktion auf
+                    toggleAdminMode();
                 }
             });
         
