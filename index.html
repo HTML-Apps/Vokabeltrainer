@@ -50265,6 +50265,48 @@
 
         let anzahlVokabeln = 0;
 
+        // --- ADMIN MODUS LOGIK ---
+        let isAdmin = false;
+
+        function checkAdminStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('isadmin')) {
+                isAdmin = true;
+            }
+            updateAdminUI();
+        }
+
+        function toggleAdminMode() {
+            isAdmin = !isAdmin;
+            updateAdminUI();
+
+            // URL aktualisieren, ohne die Seite neu zu laden
+            const newUrl = new URL(window.location);
+            if (isAdmin) {
+                newUrl.searchParams.set('isadmin', '');
+            } else {
+                newUrl.searchParams.delete('isadmin');
+            }
+            window.history.pushState({}, '', newUrl);
+            
+            // Kurzes Feedback für dich
+            alert(isAdmin ? "🦉 Admin-Modus aktiviert!" : "🔒 Admin-Modus deaktiviert!");
+        }
+
+        function updateAdminUI() {
+            const euleBtn = document.getElementById('button-eule');
+            const euleBtnLight = document.getElementById('button-eule-light');
+            
+            if (isAdmin) {
+                if (euleBtn) euleBtn.style.display = 'inline-block';
+                if (euleBtnLight) euleBtnLight.style.display = 'inline-block';
+            } else {
+                if (euleBtn) euleBtn.style.display = 'none';
+                if (euleBtnLight) euleBtnLight.style.display = 'none';
+            }
+        }
+        // --- ENDE ADMIN MODUS LOGIK ---
+
         // FIREBASE INITIALISIERUNG HINZUFÜGEN
         const firebaseConfig = {
             apiKey: "AIzaSyDNx8HzHvGb7aBOsopIWz8-KWD3cnoNqWg",
@@ -50836,6 +50878,8 @@
 
         window.onload = async function() {
             
+            checkAdminStatus();
+
             openNav();
             initializeApp();
             resetTimer();
@@ -52048,7 +52092,7 @@
             <div id="buttons_überprüfen">
                 <button id="button-überprüfen" title="Eingabe überprüfen und in Pop-up anzeigen" onclick="checkAnswer()">Überprüfen</button>
                 <button id="button-lösung" title="Lösung ohne Eingabe in Pop-up direkt anzeigen" onclick="showSolution()">Lösung</button>
-                <button id="button-eule" title="🦉-Button klicken, um Vokabel zu 'Schwierige Vokabeln' hinzuzufügen - Vokabeln erscheinen in 'Vokabelliste' in der Sidebar" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>
+                <button id="button-eule" title="🦉-Button klicken, um schwierige Vokabel zu speichern" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>            
             </div>
             
             <div class="counter-display">
@@ -52103,7 +52147,7 @@
             <div class="buttons-min">
                 <button id="random-mode-btn-light" class="mode-btn">🎲</button>
                 <button id="list-mode-btn-light" class="mode-btn active">📋</button>
-                <button id="button-eule-light" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>
+                <button id="button-eule-light" style="display: none;" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>
                 <span id="vocab-counter-light"></span>
                 <div style="flex-grow: 1;"></div>
                 <button id="prev-btn-light" class="nav-btn">&lt;</button>
@@ -52126,12 +52170,33 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
+            
+            let titleClickCount = 0;
+            let titleClickTimer;
+
             document.querySelector('.openbtn').addEventListener('click', function() {
+                // Standard-Logik: Sidebar öffnen/schließen
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar.classList.contains('open')) {
                     closeNav();
                 } else {
                     openNav();
+                }
+
+                // Triple-Click Logik für den Admin-Modus
+                titleClickCount++;
+                
+                if (titleClickCount === 1) {
+                    // Starte einen Timer: Wenn nicht innerhalb von 600ms dreimal geklickt wird, setze den Zähler zurück
+                    titleClickTimer = setTimeout(function() {
+                        titleClickCount = 0; 
+                    }, 600); 
+                }
+
+                if (titleClickCount === 3) {
+                    clearTimeout(titleClickTimer); // Timer stoppen
+                    titleClickCount = 0; // Zähler zurücksetzen
+                    toggleAdminMode(); // Admin-Modus umschalten
                 }
             });
         
