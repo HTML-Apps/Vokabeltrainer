@@ -818,9 +818,12 @@
 
         .vokabel-toast {
             position: fixed;
-            top: 20px;
+            /* 1. Position auf oben ändern */
+            top: 20px; 
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
+            /* 2. Startet nun bei -100px (außerhalb des Sichtfelds oben) */
+            transform: translateX(-50%) translateY(-100px);
+            
             background: rgba(40, 44, 52, 0.95);
             color: white;
             padding: 12px 20px;
@@ -828,13 +831,15 @@
             font-size: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             z-index: 10000;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* 3. Geschmeidige Animation mit leichtem "Bounce" */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
             gap: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        /* 4. Wenn 'show' aktiv ist, rückt er auf seine Zielposition (top: 20px) */
         .vokabel-toast.show {
             transform: translateX(-50%) translateY(0);
         }
