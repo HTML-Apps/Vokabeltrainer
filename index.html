@@ -818,7 +818,7 @@
 
         .vokabel-toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: rgba(40, 44, 52, 0.95);
@@ -51123,13 +51123,13 @@
             document.body.appendChild(toast);
 
             // Einblenden
-            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => toast.classList.add('show'), 50);
 
             // Ausblenden und Entfernen
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
         }
         
         // Funktion zum Aktualisieren des Dropdowns für die Vokabellisten inklusive der Liste "Schwierige Vokabel"
