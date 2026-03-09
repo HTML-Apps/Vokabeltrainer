@@ -816,6 +816,33 @@
             display: block;
         }
 
+        .vokabel-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(40, 44, 52, 0.95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .vokabel-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            font-size: 18px;
+        }
+
         @media (max-width: 1030px) {
             .sidebar {
                 width: 100%; /* Sidebar nimmt die volle Breite ein */
@@ -50943,8 +50970,6 @@
 
         };
 
-
-
         function setRandomMode() {
             isRandomMode = true;
             usedVokabeln = [];
@@ -51082,11 +51107,29 @@
                     });
 
                     //alert('🦉 Gespeichert!');
-                    alert(`🦉 Schwierige Vokabel erkannt! \n➞ Deutsch: ${currentVokabel.deutsch} \n➞ ${sprache}: ${currentVokabel.fremdsprache}`);
+                    //alert(`🦉 Schwierige Vokabel erkannt! \n➞ Deutsch: ${currentVokabel.deutsch} \n➞ ${sprache}: ${currentVokabel.fremdsprache}`);
+                    showSubtleToast(`Gespeichert: ${currentVokabel.fremdsprache}`)
 
                     addSchwierigeOptionToDropdown();
                 } catch (e) { console.error(e); }
-            }
+        }
+
+        function showSubtleToast(message) {
+            // Erstelle Toast Element
+            const toast = document.createElement('div');
+            toast.className = 'vokabel-toast';
+            toast.innerHTML = `<span class="toast-icon">🦉</span> <span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            // Einblenden
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Ausblenden und Entfernen
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
         
         // Funktion zum Aktualisieren des Dropdowns für die Vokabellisten inklusive der Liste "Schwierige Vokabel"
         function updateDropdown() {
