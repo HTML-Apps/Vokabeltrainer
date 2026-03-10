@@ -50697,11 +50697,20 @@
         
             if (liste === 'Schwierige Vokabel') {
                 const snap = await firestoreDB.collection('schwierigeVokabeln').where('sprache', '==', sprache).get();
-                snap.forEach((doc, i) => {
+                
+                // 1. Initialize a manual counter
+                let counter = 0; 
+                
+                // 2. Remove the 'i' from the callback, as it's undefined
+                snap.forEach((doc) => {
+                    // 3. Increment the counter inside the loop
+                    counter++;
                     const v = doc.data();
                     const div = document.createElement('div');
                     div.className = 'vokabel-paar';
-                    div.innerHTML = `<span>${i+1}.</span> <span>${v.deutsch}</span> <span>${v.fremdsprache}</span> 
+                    
+                    // 4. Use the new counter for numbering
+                    div.innerHTML = `<span>${counter}.</span> <span>${v.deutsch}</span> <span>${v.fremdsprache}</span> 
                                     <button class="delete-button" onclick="deleteVokabel('${doc.id}')">X</button>`;
                     vokabelDisplay.appendChild(div);
                 });
