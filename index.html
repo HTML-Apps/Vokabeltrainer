@@ -51138,6 +51138,54 @@
                 } catch (e) { console.error(e); }
         }
 
+
+
+
+
+
+
+
+
+        // NEUE FUNKTION: Lädt die Liste "Schwierige Vokabel" für die Sprache Spanisch
+        async function loadSchwierigeVokabelnSpanisch() {
+            // 1. Setze die Sprache im Haupt-Dropdown auf "Spanisch"
+            document.getElementById('sprache').value = 'Spanisch';
+            
+            // 2. Simuliere eine manuelle Sprachänderung, indem die abhängigen UI-Elemente aktualisiert werden.
+            await updateVokabellisten(); // Aktualisiert die Vokabellisten-Auswahl
+            await updateLernrichtung();  // Aktualisiert die Lernrichtung-Auswahl
+            updateMainImage();           // Aktualisiert das Bild
+            updateButtonColor();         // Aktualisiert die Farbe des "Überprüfen"-Buttons
+            
+            // 3. Wähle die "Schwierige Vokabel"-Liste im Dropdown aus.
+            const listeAuswahl = document.getElementById('listeAuswahl');
+            
+            // 4. Prüfe, ob die Option überhaupt existiert.
+            if (Array.from(listeAuswahl.options).some(o => o.value === 'Schwierige Vokabel')) {
+                listeAuswahl.value = 'Schwierige Vokabel';
+
+                // 5. Lade eine neue Vokabel basierend auf der Auswahl.
+                await loadNewVokabel();
+
+                // 6. Gib dem Benutzer ein visuelles Feedback.
+                showSubtleToast("⚡ Schwierige Spanisch-Vokabeln geladen");
+            } else {
+                // Fallback, falls keine schwierigen Vokabeln vorhanden sind.
+                alert("Es sind keine 'Schwierigen Vokabeln' für Spanisch gespeichert.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         function showSubtleToast(message) {
             // Erstelle Toast Element
             const toast = document.createElement('div');
@@ -52210,6 +52258,7 @@
                 <button id="random-mode-btn-light" class="mode-btn">🎲</button>
                 <button id="list-mode-btn-light" class="mode-btn active">📋</button>
                 <button id="button-eule-light" style="display: none;" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>
+                <button id="schwierig-spanisch-btn-light" title="Schwierige spanische Vokabeln üben" onclick="loadSchwierigeVokabelnSpanisch()">⚡</button> <!-- NEU -->
                 <span id="vocab-counter-light"></span>
                 <div style="flex-grow: 1;"></div>
                 <button id="prev-btn-light" class="nav-btn">&lt;</button>
