@@ -50306,6 +50306,11 @@
 
         let anzahlVokabeln = 0;
 
+        // NEU: Variablen für den Long-Click und Toggle-Zustand
+        let isSchwierigListActive = true; // `true` bedeutet, die "Schwierige Vokabel Liste" ist dran
+        let longPressTimer;
+        const LONG_PRESS_DURATION = 500; // Dauer für einen "langen Klick" in Millisekunden
+
         // --- ADMIN MODUS LOGIK ---
         let isAdmin = false;
 
@@ -50957,6 +50962,8 @@
 
             updateButtonColor();
 
+
+
             // --- KORREKTE UND FUNKTIONIERENDE LOGIK FÜR LIGHT-MODE ---
             document.getElementById('closeLightModeBtn').addEventListener('click', toggleLightMode);
 
@@ -50987,6 +50994,47 @@
                 document.getElementById('random-mode-btn-light').classList.remove('active');
             });
             // --- ENDE LOGIK FÜR LIGHT-MODE ---
+
+
+
+
+
+
+            // --- NEU: Event-Listener für den Long-Click auf den Toggle-Button ---
+            const toggleBtn = document.getElementById('schwierig-spanisch-btn-light');
+
+            const startLongPress = (event) => {
+                // Verhindert, dass bei Touch-Eingabe zusätzlich Maus-Events ausgelöst werden
+                event.preventDefault(); 
+                longPressTimer = setTimeout(toggleHendrikSchwierigLists, LONG_PRESS_DURATION);
+            };
+
+            const cancelLongPress = () => {
+                clearTimeout(longPressTimer);
+            };
+            
+            // Events für Maus-Interaktion
+            toggleBtn.addEventListener('mousedown', startLongPress);
+            toggleBtn.addEventListener('mouseup', cancelLongPress);
+            toggleBtn.addEventListener('mouseleave', cancelLongPress);
+            
+            // Events für Touch-Interaktion
+            toggleBtn.addEventListener('touchstart', startLongPress);
+            toggleBtn.addEventListener('touchend', cancelLongPress);
+            // --- ENDE NEUER CODEBLOCK ---
+
+            // Eulen-Button Event
+            document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
+
+
+
+
+
+
+
+
+
+
 
             // Eulen-Button Event
             document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
@@ -51146,34 +51194,55 @@
 
 
 
-        // NEUE FUNKTION: Lädt die Liste "Schwierige Vokabel" für die Sprache Spanisch
-        async function loadSchwierigeVokabelnSpanisch() {
-            // 1. Setze die Sprache im Haupt-Dropdown auf "Spanisch"
+        // NEUE FUNKTION: Schaltet zwischen der "Schwierige Vokabel Liste" und "Wortschatz Hendrik Liste" um.
+        async function toggleHendrikSchwierigLists() {
+            // 1. Sprache auf Spanisch setzen und UI aktualisieren, um sicherzustellen, dass alle Listen geladen sind.
             document.getElementById('sprache').value = 'Spanisch';
-            
-            // 2. Simuliere eine manuelle Sprachänderung, indem die abhängigen UI-Elemente aktualisiert werden.
-            await updateVokabellisten(); // Aktualisiert die Vokabellisten-Auswahl
-            await updateLernrichtung();  // Aktualisiert die Lernrichtung-Auswahl
-            updateMainImage();           // Aktualisiert das Bild
-            updateButtonColor();         // Aktualisiert die Farbe des "Überprüfen"-Buttons
-            
-            // 3. Wähle die "Schwierige Vokabel"-Liste im Dropdown aus.
+            await updateVokabellisten();
+            await updateLernrichtung();
+            updateMainImage();
+            updateButtonColor();
+
             const listeAuswahl = document.getElementById('listeAuswahl');
-            
-            // 4. Prüfe, ob die Option überhaupt existiert.
-            if (Array.from(listeAuswahl.options).some(o => o.value === 'Schwierige Vokabel')) {
-                listeAuswahl.value = 'Schwierige Vokabel';
 
-                // 5. Lade eine neue Vokabel basierend auf der Auswahl.
-                await loadNewVokabel();
+            // 2. Entscheiden, welche Liste als Nächstes geladen wird.
+            if (isSchwierigListActive) {
+                // Zustand ist "Schwierig" -> zu "Hendrik" wechseln
+                const hendrikOption = Array.from(listeAuswahl.options).find(opt => opt.text.startsWith('Wortschatz Hendrik'));
 
-                // 6. Gib dem Benutzer ein visuelles Feedback.
-                showSubtleToast("⚡ Schwierige Spanisch-Vokabeln geladen");
+                if (hendrikOption) {
+                    listeAuswahl.value = hendrikOption.value;
+                    await loadNewVokabel();
+                    showSubtleToast("📋 Wortschatz Hendrik geladen");
+                    isSchwierigListActive = false; // Zustand für den nächsten Klick umkehren
+                } else {
+                    alert("Die Liste 'Wortschatz Hendrik' wurde nicht gefunden.");
+                }
             } else {
-                // Fallback, falls keine schwierigen Vokabeln vorhanden sind.
-                alert("Es sind keine 'Schwierigen Vokabeln' für Spanisch gespeichert.");
+                // Zustand ist "Hendrik" -> zu "Schwierig" wechseln
+                const schwierigeOption = Array.from(listeAuswahl.options).find(o => o.value === 'Schwierige Vokabel');
+
+                if (schwierigeOption) {
+                    listeAuswahl.value = schwierigeOption.value;
+                    await loadNewVokabel();
+                    showSubtleToast("⚡ Schwierige Spanisch-Vokabeln geladen");
+                    isSchwierigListActive = true; // Zustand für den nächsten Klick umkehren
+                } else {
+                    alert("Keine 'Schwierigen Vokabeln' für Spanisch vorhanden.");
+                }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
 
         function showSubtleToast(message) {
             // Erstelle Toast Element
@@ -52247,7 +52316,7 @@
                 <button id="random-mode-btn-light" class="mode-btn">🎲</button>
                 <button id="list-mode-btn-light" class="mode-btn active">📋</button>
                 <button id="button-eule-light" style="display: none;" onclick="saveCurrentVokabelAsSchwierig()">🦉</button>
-                <button id="schwierig-spanisch-btn-light" title="Schwierige spanische Vokabeln üben" onclick="loadSchwierigeVokabelnSpanisch()">⚡</button> <!-- NEU -->
+                <button id="schwierig-spanisch-btn-light" title="Lange drücken zum Umschalten: Schwierige Vokabeln / Wortschatz Hendrik">⚡</button>
                 <span id="vocab-counter-light"></span>
                 <div style="flex-grow: 1;"></div>
                 <button id="prev-btn-light" class="nav-btn">&lt;</button>
