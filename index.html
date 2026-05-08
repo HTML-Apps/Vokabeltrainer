@@ -51369,7 +51369,19 @@
             const listeAuswahl = document.getElementById('listeAuswahl');
 
             // 2. Entscheiden, welche Liste als Nächstes geladen wird.
-            if (isSchwierigListActive) {
+            if (!isSchwierigListActive) {
+                // Zustand ist NICHT "Schwierig" -> zu "Schwierig" wechseln
+                const schwierigeOption = Array.from(listeAuswahl.options).find(o => o.value === 'Schwierige Vokabel');
+
+                if (schwierigeOption) {
+                    listeAuswahl.value = schwierigeOption.value;
+                    await loadNewVokabel();
+                    showSubtleToast("⚡ Schwierige Spanisch-Vokabeln geladen");
+                    isSchwierigListActive = true; // Zustand für den nächsten Klick umkehren
+                } else {
+                    alert("Keine 'Schwierigen Vokabeln' für Spanisch vorhanden.");
+                }
+            } else {
                 // Zustand ist "Schwierig" -> zu "Hendrik" wechseln
                 const hendrikOption = Array.from(listeAuswahl.options).find(opt => opt.text.startsWith('Wortschatz Hendrik'));
 
@@ -51380,18 +51392,6 @@
                     isSchwierigListActive = false; // Zustand für den nächsten Klick umkehren
                 } else {
                     alert("Die Liste 'Wortschatz Hendrik' wurde nicht gefunden.");
-                }
-            } else {
-                // Zustand ist "Hendrik" -> zu "Schwierig" wechseln
-                const schwierigeOption = Array.from(listeAuswahl.options).find(o => o.value === 'Schwierige Vokabel');
-
-                if (schwierigeOption) {
-                    listeAuswahl.value = schwierigeOption.value;
-                    await loadNewVokabel();
-                    showSubtleToast("⚡ Schwierige Spanisch-Vokabeln geladen");
-                    isSchwierigListActive = true; // Zustand für den nächsten Klick umkehren
-                } else {
-                    alert("Keine 'Schwierigen Vokabeln' für Spanisch vorhanden.");
                 }
             }
         }
