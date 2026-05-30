@@ -50866,7 +50866,7 @@
             const overlay = document.getElementById('lightModeOverlay');
             if (overlay.style.display !== 'flex') {
                 document.getElementById('antwort-input').focus(); // Nur fokussieren, wenn Overlay aus ist
-}
+            }
             document.getElementById('dialog').style.display = 'block';
 
             // Light-Mode-Dialog aktualisieren, falls sichtbar
@@ -51175,11 +51175,6 @@
             });
             // --- ENDE LOGIK FÜR LIGHT-MODE ---
 
-
-
-
-
-
             // --- NEU: Event-Listener für den Long-Click auf den Toggle-Button ---
             const toggleBtn = document.getElementById('schwierig-spanisch-btn-light');
 
@@ -51205,16 +51200,6 @@
 
             // Eulen-Button Event
             document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
-
-
-
-
-
-
-
-
-
-
 
             // Eulen-Button Event
             document.querySelector(".owl-button").onclick = saveCurrentVokabelAsSchwierig;
@@ -52641,6 +52626,100 @@
         document.getElementById("cancelPosition").addEventListener("click", function() {
             document.getElementById("positionPopup").classList.remove("showPopupPosition");
         });
+
+
+
+
+
+
+        // Wartet, bis die native App-Hülle komplett geladen ist
+        document.addEventListener('deviceready', onDeviceReady, false);
+
+        function onDeviceReady() {
+            console.log("Native Android-Schnittstelle ist startklar!");
+            
+            // Event-Listener: Wenn der Nutzer auf einen Button in der Benachrichtigung drückt
+            if (window.cordova && cordova.plugins && cordova.plugins.notification) {
+                cordova.plugins.notification.local.on('click', function (notification, eopts) {
+                    // Wir prüfen, welcher Button (Action) gedrückt wurde
+                    if (eopts.action === 'show_solution') {
+                        zeigeAndroidLoesung();
+                    } else if (eopts.action === 'next_vocab') {
+                        naechsteAndroidVokabel();
+                    }
+                });
+            }
+        }
+
+        // Schiebt die aktuelle Vokabel direkt in die Android-Benachrichtigungsleiste
+        function updateAndroidNotification() {
+            if (!window.cordova || !cordova.plugins || !cordova.plugins.notification) return;
+
+            const richtung = document.getElementById("lernrichtung").value;
+            let frageWort = "";
+
+            if (currentVokabel && richtung) {
+                if (richtung.startsWith('de-')) {
+                    frageWort = currentVokabel.deutsch;
+                } else {
+                    frageWort = currentVokabel.fremdsprache;
+                }
+            }
+
+            cordova.plugins.notification.local.schedule({
+                id: 1,
+                title: "Vokabeltrainer Prototyp",
+                text: `Frage: ${frageWort}`,
+                sticky: true, // Die Benachrichtigung kann nicht weggewischt werden
+                foreground: true,
+                lockscreen: true,
+                // Hier bauen wir deine interaktiven Buttons für die Leiste
+                actions: [
+                    { id: 'show_solution', title: '👁️ Lösung' },
+                    { id: 'next_vocab',    title: '➡️ Weiter' }
+                ]
+            });
+        }
+
+        // Funktion, wenn in der Leiste auf "Lösung" gedrückt wird
+        function zeigeAndroidLoesung() {
+            const richtung = document.getElementById("lernrichtung").value;
+            let loesungWort = "";
+
+            if (currentVokabel && richtung) {
+                if (richtung.startsWith('de-')) {
+                    loesungWort = currentVokabel.fremdsprache;
+                } else {
+                    loesungWort = currentVokabel.deutsch;
+                }
+            }
+
+            // Aktualisiert die Benachrichtigung und zeigt das gelöste Wort an
+            cordova.plugins.notification.local.schedule({
+                id: 1,
+                title: "Vokabeltrainer Prototyp",
+                text: `Lösung: ${loesungWort}`,
+                sticky: true,
+                actions: [
+                    { id: 'next_vocab', title: '➡️ Nächste Vokabel' }
+                ]
+            });
+        }
+
+        // Funktion, wenn in der Leiste auf "Weiter" gedrückt wird
+        async function naechsteAndroidVokabel() {
+            // Ruft einfach deine bestehende Logik aus der index.html auf, um eine neue Vokabel zu würfeln
+            if (typeof loadNewVokabel === 'function') {
+                await loadNewVokabel();
+                // Schiebt das neue Wort direkt hinterher in die Leiste
+                updateAndroidNotification();
+            }
+        }
+
+
+
+
+
   
     </script>
 </body>
