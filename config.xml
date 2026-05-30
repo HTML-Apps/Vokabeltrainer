@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="de.linuxcore.vokabeltrainer" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Vokabeltrainer</name>
+    <description>
+        Ein interaktiver Vokabeltrainer für die Android-Benachrichtigungsleiste.
+    </description>
+    <author email="deine.email@example.com">
+        linuxcore
+    </author>
+
+    <content src="index.html" />
+
+    <platform name="android">
+        <preference name="KeepRunning" value="true" />
+        <preference name="LaunchMode" value="singleInstance" />
+        <icon src="book.png" />
+    </platform>
+
+    <plugin name="cordova-plugin-local-notification" spec="https://github.com/katzer/cordova-plugin-local-notifications.git" />
+    
+    <plugin name="cordova-plugin-device" spec="~3.0.0" />
+</widget>
