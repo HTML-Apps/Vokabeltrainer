@@ -7,6 +7,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Zwingt GitHub Actions jetzt schon auf das zukunftssichere Node 24
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
     steps:
     - name: Code auschecken
       uses: actions/checkout@v4
@@ -14,7 +18,7 @@ jobs:
     - name: Node.js einrichten
       uses: actions/setup-node@v4
       with:
-        node-level: 18
+        node-version: '20' # Hier stand fälschlicherweise node-level. Korrigiert!
 
     - name: Cordova installieren
       run: npm install -g cordova
